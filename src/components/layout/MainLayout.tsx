@@ -22,13 +22,8 @@ export default function MainLayout({ children }: MainLayoutProps) {
           borderBottom="1px solid"
           borderColor="gray.200"
         >
-          <Image src="/images/denti_x.png" alt="Dentix Logo" h="30px" />
-          <Box
-            as="button"
-            onClick={logout}
-            color="red.500"
-            fontWeight="medium"
-          >
+          <Image src="/images/DentiGlobal.png" alt="Dentix Logo" h="30px" />
+          <Box as="button" onClick={logout} color="red.500" fontWeight="medium">
             로그아웃
           </Box>
         </Flex>

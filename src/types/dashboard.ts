@@ -1,30 +1,37 @@
-// 대시보드 데이터 DTO
 export interface DashboardDto {
-  latestOralCheckId: number;
-  oralCheckTimeInterval: number;
+  latestOralCheckId: number | null;
+  oralCheckTimeInterval: number | null;
+
   oralCheckTotalCount: number;
   oralCheckHealthyCount: number;
   oralCheckGoodCount: number;
   oralCheckAttentionCount: number;
   oralCheckDangerCount: number;
+
   toothBrushingTotalCount: number;
   toothBrushingAverage: number;
-  oralStatus?: {
-    oralStatusType: string;
-    oralStatusTitle: string;
-  } | null;
-  questionnaireCreated?: string | null;
+
+  oralStatus: OralStatusTypeDto | null;
+  questionnaireCreated: string | null;
+
   oralCheckResultTotalType: string;
   oralCheckUpRightScoreType: string;
   oralCheckUpLeftScoreType: string;
   oralCheckDownLeftScoreType: string;
   oralCheckDownRightScoreType: string;
-  oralCheckDailyList: any[];
+
+  oralCheckDailyList: OralCheckDailyChangeDto[];
 }
 
-// API 공통 응답 타입
-export interface DataResponse<T> {
-  rt: number;
-  rtMsg: string;
-  response: T;
+export interface OralStatusTypeDto {
+  plaque: number;
+  status: string;
+}
+
+export interface OralCheckDailyChangeDto {
+  date: string;
+  healthyCount: number;
+  goodCount: number;
+  attentionCount: number;
+  dangerCount: number;
 }

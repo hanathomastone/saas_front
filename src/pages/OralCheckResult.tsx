@@ -1,6 +1,12 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 function OralCheckResult() {
+  const { t } = useTranslation();
+
+  const userName = "홍길동"; // ⚠️ 실제로는 로그인/참여자 이름 받아오기
+  const examDate = "2023.06.06";
+
   return (
     <div style={{ background: "#f5f5f5", minHeight: "100vh", padding: "1rem" }}>
       {/* 상단 제목 */}
@@ -11,7 +17,7 @@ function OralCheckResult() {
           marginBottom: "1rem",
         }}
       >
-        <h2 style={{ fontWeight: "bold" }}>촬영 결과</h2>
+        <h2 style={{ fontWeight: "bold" }}>{t("oral_result_title")}</h2>
         <button
           style={{
             border: "none",
@@ -21,7 +27,7 @@ function OralCheckResult() {
             cursor: "pointer",
           }}
         >
-          완료
+          {t("done")}
         </button>
       </div>
 
@@ -34,7 +40,7 @@ function OralCheckResult() {
           marginBottom: "1rem",
         }}
       >
-        <p style={{ color: "#888", fontSize: "0.9rem" }}>2023.06.06</p>
+        <p style={{ color: "#888", fontSize: "0.9rem" }}>{examDate}</p>
         <div
           style={{
             display: "flex",
@@ -43,8 +49,10 @@ function OralCheckResult() {
           }}
         >
           <p style={{ fontSize: "1rem", fontWeight: "bold" }}>
-            홍길동 님의 구강 상태는{" "}
-            <span style={{ color: "#0B57D0" }}>건강</span> 입니다
+            {t("oral_result_summary", {
+              name: userName,
+              status: t("healthy"),
+            })}
           </p>
           <div
             style={{
@@ -67,41 +75,45 @@ function OralCheckResult() {
         }}
       >
         <h3 style={{ fontWeight: "bold", marginBottom: "0.5rem" }}>
-          홍길동님의 검진 결과 내용
+          {t("oral_result_detail_title", { name: userName })}
         </h3>
         <p style={{ fontWeight: "bold", marginTop: "0.5rem" }}>
-          전체적인 구강 상태
+          {t("overall_oral_status")}
         </p>
         <p>
-          전체 평균 플라그: <span style={{ fontWeight: "bold" }}>4.6%</span>{" "}
-          <span style={{ color: "#0B57D0", fontWeight: "bold" }}>건강</span>
+          {t("average_plaque")}:{" "}
+          <span style={{ fontWeight: "bold" }}>4.6%</span>{" "}
+          <span style={{ color: "#0B57D0", fontWeight: "bold" }}>
+            {t("healthy")}
+          </span>
         </p>
 
         <p style={{ fontWeight: "bold", marginTop: "1rem" }}>
-          부위별 구강 상태
+          {t("area_oral_status")}
         </p>
         <ul style={{ listStyle: "none", padding: 0 }}>
           <li>
-            상악우측 → 플라그: 3.4%{" "}
-            <span style={{ color: "#0B57D0" }}>건강</span>
+            {t("upper_right")} → {t("plaque")}: 3.4%{" "}
+            <span style={{ color: "#0B57D0" }}>{t("healthy")}</span>
           </li>
           <li>
-            상악좌측 → 플라그: 4.4%{" "}
-            <span style={{ color: "#0B57D0" }}>건강</span>
+            {t("upper_left")} → {t("plaque")}: 4.4%{" "}
+            <span style={{ color: "#0B57D0" }}>{t("healthy")}</span>
           </li>
           <li>
-            하악좌측 → 플라그: 2.4%{" "}
-            <span style={{ color: "#0B57D0" }}>건강</span>
+            {t("lower_left")} → {t("plaque")}: 2.4%{" "}
+            <span style={{ color: "#0B57D0" }}>{t("healthy")}</span>
           </li>
           <li>
-            하악우측 → 플라그: 8.4% <span style={{ color: "green" }}>양호</span>
+            {t("lower_right")} → {t("plaque")}: 8.4%{" "}
+            <span style={{ color: "green" }}>{t("fair")}</span>
           </li>
         </ul>
 
         <p style={{ marginTop: "1rem" }}>
-          전체적으로 건강한 상태 👍
+          {t("oral_result_conclusion")}
           <br />
-          양치질 할 때, <b>하악좌측</b>을 조금 더 신경 써주세요.
+          {t("oral_result_tip", { area: t("lower_left") })}
         </p>
       </div>
 
@@ -114,11 +126,9 @@ function OralCheckResult() {
           marginBottom: "1rem",
         }}
       >
-        <h3 style={{ marginBottom: "0.5rem" }}>구강관리를 위한 팁</h3>
-        <p>홍길동님을 위한 콘텐츠가 있어요!</p>
-        <p style={{ fontWeight: "bold" }}>
-          구강 관리를 위한 정보를 알아볼까요?
-        </p>
+        <h3 style={{ marginBottom: "0.5rem" }}>{t("oral_tips_title")}</h3>
+        <p>{t("oral_tips_desc", { name: userName })}</p>
+        <p style={{ fontWeight: "bold" }}>{t("oral_tips_cta")}</p>
         <button
           style={{
             background: "#0B57D0",
@@ -131,7 +141,7 @@ function OralCheckResult() {
             marginTop: "1rem",
           }}
         >
-          좋아요!
+          {t("like_button")}
         </button>
       </div>
 
@@ -155,14 +165,9 @@ function OralCheckResult() {
               display: "inline-block",
             }}
           ></span>
-          안내사항
+          {t("notice")}
         </h4>
-        <p style={{ marginTop: "0.5rem" }}>
-          본 서비스에서 제공하는 결과는 어떠한 의학적 판단이나 진단의 의미를
-          갖지 않으며, 단지 일상적인 구강 건강관리 활동을 위해 보조적으로 활용할
-          것과 전문가의 진료 및 진단을 받기 위해서는 의료인 및 의료기관을
-          방문하시길 바랍니다.
-        </p>
+        <p style={{ marginTop: "0.5rem" }}>{t("oral_result_notice_text")}</p>
       </div>
     </div>
   );

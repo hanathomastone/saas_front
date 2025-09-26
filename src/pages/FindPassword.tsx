@@ -10,12 +10,14 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 export default function FindPassword() {
   const [userId, setUserId] = useState("");
   const [question, setQuestion] = useState("");
   const [answer, setAnswer] = useState("");
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const handleConfirm = () => {
     // 지금은 검증 없이 무조건 reset-password로 이동
@@ -25,46 +27,46 @@ export default function FindPassword() {
   return (
     <Box p={6} maxW="400px" mx="auto">
       <Heading size="sm" mb={6}>
-        비밀번호 찾기
+        {t("find_password")}
       </Heading>
 
       <Text color="gray.600" mb={6}>
-        아이디와 질문 및 답변을 선택해주세요
+        {t("find_password_desc")}
       </Text>
 
       <FormControl mb={4}>
-        <FormLabel>아이디</FormLabel>
+        <FormLabel>{t("id")}</FormLabel>
         <Input
           value={userId}
           onChange={(e) => setUserId(e.target.value)}
-          placeholder="아이디를 입력하세요"
+          placeholder={t("enter_id") || ""}
         />
       </FormControl>
 
       <FormControl mb={4}>
-        <FormLabel>질문 선택</FormLabel>
+        <FormLabel>{t("select_question")}</FormLabel>
         <Select
-          placeholder="질문을 선택해주세요."
+          placeholder={t("select_question_placeholder") || ""}
           value={question}
           onChange={(e) => setQuestion(e.target.value)}
         >
-          <option value="1">내 첫 반려동물 이름은?</option>
-          <option value="2">내가 졸업한 초등학교 이름은?</option>
-          <option value="3">내가 가장 좋아하는 음식은?</option>
+          <option value="1">{t("question_pet")}</option>
+          <option value="2">{t("question_school")}</option>
+          <option value="3">{t("question_food")}</option>
         </Select>
       </FormControl>
 
       <FormControl mb={6}>
-        <FormLabel>답변</FormLabel>
+        <FormLabel>{t("answer")}</FormLabel>
         <Input
           value={answer}
           onChange={(e) => setAnswer(e.target.value)}
-          placeholder="답변을 입력하세요"
+          placeholder={t("enter_answer") || ""}
         />
       </FormControl>
 
       <Button colorScheme="blue" w="100%" h="50px" onClick={handleConfirm}>
-        확인
+        {t("confirm")}
       </Button>
     </Box>
   );

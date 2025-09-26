@@ -15,8 +15,9 @@ import {
   ModalBody,
   ModalFooter,
 } from "@chakra-ui/react";
-// import { useNavigate } from "react-router-dom";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+
 export default function Contact() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -24,75 +25,76 @@ export default function Contact() {
   const [isCompleteOpen, setIsCompleteOpen] = useState(false);
 
   const toast = useToast();
-//   const navigate = useNavigate();
-const location = useLocation();
+  const location = useLocation();
   const navigate = useNavigate();
-   const from = location.state?.from || "login"; // 기본값은 로그인
+  const { t } = useTranslation();
+
+  const from = location.state?.from || "login"; // 기본값은 로그인
+
   const handleSubmit = () => {
     if (!name || !email || !message) {
-      toast({ title: "모든 항목을 입력해주세요.", status: "warning" });
+      toast({ title: t("contact_warning"), status: "warning" });
       return;
     }
-    // 지금은 단순히 성공 모달만 띄우기
     setIsCompleteOpen(true);
   };
 
-   const handleConfirm = () => {
+  const handleConfirm = () => {
     if (from === "user") {
-      navigate("/user"); // 사용자 페이지로 이동
+      navigate("/user");
     } else {
-      navigate("/login"); // 로그인 페이지로 이동
+      navigate("/login");
     }
   };
 
   return (
     <Box p={6} maxW="400px" mx="auto">
       <Heading size="sm" mb={6}>
-        문의하기
+        {t("contact")}
       </Heading>
 
       <FormControl mb={4}>
-        <FormLabel>이름</FormLabel>
+        <FormLabel>{t("name")}</FormLabel>
         <Input
           value={name}
           onChange={(e) => setName(e.target.value)}
-          placeholder="이름을 입력하세요"
+          placeholder={t("enter_name") || ""}
         />
       </FormControl>
 
       <FormControl mb={4}>
-        <FormLabel>이메일</FormLabel>
+        <FormLabel>{t("email")}</FormLabel>
         <Input
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          placeholder="이메일을 입력하세요"
+          placeholder={t("enter_email") || ""}
         />
       </FormControl>
 
       <FormControl mb={6}>
-        <FormLabel>문의 내용</FormLabel>
+        <FormLabel>{t("message")}</FormLabel>
         <Textarea
           value={message}
           onChange={(e) => setMessage(e.target.value)}
-          placeholder="문의 내용을 입력하세요"
+          placeholder={t("enter_message") || ""}
           rows={5}
         />
       </FormControl>
 
       <Button colorScheme="blue" w="100%" h="50px" onClick={handleSubmit}>
-        제출하기
+        {t("submit")}
       </Button>
 
       {/* 완료 모달 */}
       <Modal isOpen={isCompleteOpen} onClose={handleConfirm} isCentered>
         <ModalOverlay />
         <ModalContent textAlign="center" py={4}>
-          <ModalHeader fontSize="lg">문의가 접수되었습니다 🎉</ModalHeader>
-          <ModalBody>빠른 시일 내에 답변드리겠습니다.</ModalBody>
+          <ModalHeader fontSize="lg">{t("contact_complete_title")}</ModalHeader>
+          <ModalBody>{t("contact_complete_body")}</ModalBody>
           <ModalFooter>
             <Button colorScheme="blue" w="100%" onClick={handleConfirm}>
-              확인
+              {t("confirm")}
             </Button>
           </ModalFooter>
         </ModalContent>

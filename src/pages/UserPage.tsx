@@ -11,13 +11,15 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 export default function UserPage() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const handleLogout = () => {
     localStorage.removeItem("isAuthenticated"); // 임시 로그아웃 처리
-    localStorage.removeItem("accessToken");     // 토큰도 제거 (추후 API 연동 대비)
+    localStorage.removeItem("accessToken"); // 토큰 제거 (추후 API 연동 대비)
     navigate("/login");
   };
 
@@ -25,7 +27,7 @@ export default function UserPage() {
     <Box p={6} maxW="500px" mx="auto">
       {/* Header */}
       <Heading size="md" mb={6}>
-        사용자 설정
+        {t("user_settings")}
       </Heading>
 
       {/* Profile Section */}
@@ -54,7 +56,7 @@ export default function UserPage() {
         </Flex>
         <RouterLink to="/reset-password" state={{ from: "user" }}>
           <Button size="sm" colorScheme="blue" variant="outline">
-            비밀번호 변경
+            {t("change_password")}
           </Button>
         </RouterLink>
       </Flex>
@@ -62,66 +64,71 @@ export default function UserPage() {
       {/* Service Settings */}
       <Box p={4} borderRadius="md" bg="gray.50" mb={6}>
         <Heading size="sm" mb={4}>
-          서비스 설정
+          {t("service_settings")}
         </Heading>
         <Flex justify="space-between" align="center" mb={4}>
-          <Text>마케팅 동의</Text>
+          <Text>{t("marketing_consent")}</Text>
           <Switch />
         </Flex>
         <Divider />
         <Flex justify="space-between" align="center" my={4}>
-          <Text>자동 로그인</Text>
+          <Text>{t("auto_login")}</Text>
           <Switch defaultChecked />
         </Flex>
         <Divider />
         <Flex justify="space-between" align="center" mt={4}>
-          <Text>양치질 횟수</Text>
-          <Input type="number" defaultValue={3} width="60px" textAlign="center" />
+          <Text>{t("toothbrushing_count")}</Text>
+          <Input
+            type="number"
+            defaultValue={3}
+            width="60px"
+            textAlign="center"
+          />
         </Flex>
       </Box>
 
       {/* Service Menu */}
       <Box p={4} borderRadius="md" bg="gray.50" mb={6}>
         <Heading size="sm" mb={4}>
-          서비스 이용
+          {t("service_usage")}
         </Heading>
         <Stack spacing={4}>
           <Button variant="ghost" justifyContent="flex-start">
-            서비스 의료 정보
+            {t("medical_info")}
           </Button>
           <Divider />
           <Button variant="ghost" justifyContent="flex-start">
-            구강검진 가이드
+            {t("oral_check_guide")}
           </Button>
           <Divider />
           <RouterLink to="/contact" state={{ from: "user" }}>
             <Button variant="ghost" justifyContent="flex-start">
-              문의하기
+              {t("contact")}
             </Button>
           </RouterLink>
           <Divider />
           <Button variant="ghost" justifyContent="flex-start">
-            약관보기
+            {t("view_terms")}
           </Button>
           <Divider />
           <Button variant="ghost" justifyContent="flex-start" color="red.500">
-            회원탈퇴
+            {t("delete_account")}
           </Button>
           <Divider />
           <Flex justify="space-between" align="center">
-            <Text>버전정보</Text>
+            <Text>{t("version_info")}</Text>
             <Text fontSize="sm">1.0.0</Text>
           </Flex>
           <Divider />
           <Button variant="ghost" justifyContent="flex-start">
-            오픈소스 라이선스
+            {t("open_source_license")}
           </Button>
         </Stack>
       </Box>
 
       {/* Logout */}
       <Button w="100%" colorScheme="gray" onClick={handleLogout}>
-        로그아웃
+        {t("logout")}
       </Button>
     </Box>
   );

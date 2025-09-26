@@ -8,17 +8,18 @@ import {
   FormControl,
   FormLabel,
   Heading,
-  HStack,
   Input,
   Stack,
   Text,
   useToast,
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 export default function RegisterVerify() {
   const navigate = useNavigate();
   const toast = useToast();
+  const { t } = useTranslation();
 
   const [phone, setPhone] = useState("");
   const [name, setName] = useState("");
@@ -52,11 +53,11 @@ export default function RegisterVerify() {
 
   const handleNext = () => {
     if (!phone || !name) {
-      toast({ title: "휴대폰 번호와 이름을 입력해주세요.", status: "warning" });
+      toast({ title: t("enter_phone_and_name"), status: "warning" });
       return;
     }
     if (!terms.service || !terms.privacy) {
-      toast({ title: "필수 약관에 동의해주세요.", status: "error" });
+      toast({ title: t("accept_required_terms"), status: "error" });
       return;
     }
     // 인증 성공 → 회원가입 폼으로 이동
@@ -71,7 +72,7 @@ export default function RegisterVerify() {
           ←
         </Button>
         <Heading size="sm" ml={2}>
-          회원 확인
+          {t("verify_member")}
         </Heading>
       </Flex>
 
@@ -81,17 +82,17 @@ export default function RegisterVerify() {
       </Box>
 
       <Heading size="md" mb={2}>
-        회원을 확인합니다.
+        {t("verify_member_title")}
       </Heading>
       <Text color="gray.600" mb={6}>
-        회원 여부를 확인합니다. 또한, 서비스 이용 동의가 필요해요.
+        {t("verify_member_description")}
       </Text>
 
       {/* Phone */}
       <FormControl mb={4}>
-        <FormLabel>휴대폰 번호 입력</FormLabel>
+        <FormLabel>{t("enter_phone")}</FormLabel>
         <Input
-          placeholder="연락처를 입력해주세요"
+          placeholder={t("phone_placeholder")}
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
         />
@@ -99,9 +100,9 @@ export default function RegisterVerify() {
 
       {/* Name */}
       <FormControl mb={6}>
-        <FormLabel>이름 입력</FormLabel>
+        <FormLabel>{t("enter_name")}</FormLabel>
         <Input
-          placeholder="실명을 입력해주세요"
+          placeholder={t("name_placeholder")}
           value={name}
           onChange={(e) => setName(e.target.value)}
         />
@@ -113,26 +114,26 @@ export default function RegisterVerify() {
           isChecked={allChecked}
           onChange={(e) => handleAllCheck(e.target.checked)}
         >
-          전체 동의
+          {t("agree_all")}
         </Checkbox>
         <Divider />
         <Checkbox
           isChecked={terms.service}
           onChange={(e) => handleSingleCheck("service", e.target.checked)}
         >
-          서비스 이용약관 동의 (필수)
+          {t("agree_service")}
         </Checkbox>
         <Checkbox
           isChecked={terms.privacy}
           onChange={(e) => handleSingleCheck("privacy", e.target.checked)}
         >
-          개인정보 수집 및 이용 동의 (필수)
+          {t("agree_privacy")}
         </Checkbox>
         <Checkbox
           isChecked={terms.marketing}
           onChange={(e) => handleSingleCheck("marketing", e.target.checked)}
         >
-          마케팅 정보 수신 동의 (선택)
+          {t("agree_marketing")}
         </Checkbox>
       </Stack>
 
@@ -144,7 +145,7 @@ export default function RegisterVerify() {
         onClick={handleNext}
         isDisabled={!phone || !name}
       >
-        다음
+        {t("next")}
       </Button>
     </Box>
   );

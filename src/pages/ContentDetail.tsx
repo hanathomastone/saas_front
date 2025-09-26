@@ -1,8 +1,20 @@
 import React, { useEffect, useState } from "react";
-import { Box, Text, Image, VStack, Spinner, AspectRatio } from "@chakra-ui/react";
+import {
+  Box,
+  Text,
+  Image,
+  VStack,
+  Spinner,
+  AspectRatio,
+} from "@chakra-ui/react";
 import { useParams, useLocation } from "react-router-dom";
 import { getContentDetail } from "../api/contents";
-import type { ContentsCardListDto, ContentsDto, DataResponse } from "../types/contents";
+import type {
+  ContentsCardListDto,
+  ContentsDto,
+  DataResponse,
+} from "../types/contents";
+import { useTranslation } from "react-i18next";
 
 const ContentDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -11,6 +23,7 @@ const ContentDetail: React.FC = () => {
 
   const [content, setContent] = useState<ContentsCardListDto | null>(null);
   const [loading, setLoading] = useState(true);
+  const { t } = useTranslation();
 
   useEffect(() => {
     const fetchDetail = async () => {
@@ -40,7 +53,7 @@ const ContentDetail: React.FC = () => {
     return (
       <Box textAlign="center" mt="20">
         <Spinner size="xl" />
-        <Text mt="4">콘텐츠를 불러오는 중...</Text>
+        <Text mt="4">{t("loading_content")}</Text>
       </Box>
     );
   }
@@ -54,7 +67,10 @@ const ContentDetail: React.FC = () => {
         </Text>
         <AspectRatio ratio={16 / 9} w="100%" maxW="800px">
           <iframe
-            src={stateContent.videoURL.replace("youtu.be", "www.youtube.com/embed")}
+            src={stateContent.videoURL.replace(
+              "youtu.be",
+              "www.youtube.com/embed"
+            )}
             title={stateContent.title}
             allowFullScreen
           />
@@ -75,7 +91,7 @@ const ContentDetail: React.FC = () => {
             <Image
               key={card.number}
               src={card.path}
-              alt={`${content.title} - 카드 ${card.number}`}
+              alt={`${content.title} - ${t("card")} ${card.number}`}
               borderRadius="lg"
               shadow="sm"
             />
@@ -87,7 +103,7 @@ const ContentDetail: React.FC = () => {
 
   return (
     <Box p={6}>
-      <Text>콘텐츠를 찾을 수 없습니다.</Text>
+      <Text>{t("content_not_found")}</Text>
     </Box>
   );
 };

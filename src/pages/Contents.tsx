@@ -11,8 +11,9 @@ import {
 import { useNavigate } from "react-router-dom";
 import { getContents } from "../api/contents";
 import type { ContentsDto, DataResponse } from "../types/contents";
+import { useTranslation } from "react-i18next";
 
-// ✅ 추가: 카테고리 타입 정의
+// ✅ 카테고리 타입 정의
 interface ContentsCategoryDto {
   id: number;
   name: string;
@@ -25,6 +26,7 @@ const Contents: React.FC = () => {
   const [contents, setContents] = useState<ContentsDto[]>([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   useEffect(() => {
     const fetchContents = async () => {
@@ -51,7 +53,7 @@ const Contents: React.FC = () => {
     return (
       <Box textAlign="center" mt="20">
         <Spinner size="xl" />
-        <Text mt="4">콘텐츠를 불러오는 중...</Text>
+        <Text mt="4">{t("loading_content")}</Text>
       </Box>
     );
   }
@@ -59,7 +61,7 @@ const Contents: React.FC = () => {
   return (
     <Box p={6}>
       <Text fontSize="2xl" fontWeight="bold" mb={6}>
-        콘텐츠 목록
+        {t("contents_list")}
       </Text>
 
       <SimpleGrid columns={[1, 2, 3]} spacing={6}>
@@ -104,12 +106,19 @@ const Contents: React.FC = () => {
                       {cat.name}
                     </Badge>
                   ))}
-                  <Badge borderRadius="full" px={3} py={1} fontSize="xs" bg={item.typeColor} color="white">
+                  <Badge
+                    borderRadius="full"
+                    px={3}
+                    py={1}
+                    fontSize="xs"
+                    bg={item.typeColor}
+                    color="white"
+                  >
                     {item.type === "CARD"
-                      ? "카드뉴스"
+                      ? t("type_card")
                       : item.type === "VIDEO"
-                      ? "영상"
-                      : "애니메이션"}
+                      ? t("type_video")
+                      : t("type_animation")}
                   </Badge>
                 </Flex>
                 <Text fontWeight="bold" noOfLines={2}>

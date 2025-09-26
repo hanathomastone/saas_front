@@ -8,7 +8,10 @@ import RegisterExtra from "../pages/RegisterExtra";
 import FindPassword from "../pages/FindPassword";
 import ResetPassword from "../pages/ResetPassword";
 import Contact from "../pages/Contact";
+import OralCheckPage from "../pages/OralCheckPage";
+import OralCheckCamera from "../pages/OralCheckCamera";
 
+import OralCheckUpload from "../pages/OralCheckUpload";
 // 인증 필요 페이지
 import Dashboard from "../pages/Dashboard";
 import Contents from "../pages/Contents";
@@ -26,6 +29,7 @@ export default function AppRoutes() {
     <Routes>
       {/* ✅ 인증 불필요 */}
       <Route path="/login" element={<Login />} />
+      {/* <Route path="/oral-check" element={<OralCheckPage />} /> */}
       <Route path="/register/verify" element={<RegisterVerify />} />
       <Route path="/register/form" element={<RegisterForm />} />
       <Route path="/register/extra" element={<RegisterExtra />} />
@@ -34,6 +38,26 @@ export default function AppRoutes() {
       <Route path="/contact" element={<Contact />} />
 
       {/* ✅ 인증 필요 (PrivateRoute + MainLayout으로 감싸기) */}
+      <Route
+        path="/oral-check"
+        element={
+          <PrivateRoute>
+            <MainLayout>
+              <OralCheckPage />
+            </MainLayout>
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/oral-check/camera"
+        element={
+          <PrivateRoute>
+            <MainLayout>
+              <OralCheckCamera />
+            </MainLayout>
+          </PrivateRoute>
+        }
+      />
       <Route
         path="/dashboard"
         element={
@@ -62,6 +86,17 @@ export default function AppRoutes() {
           <PrivateRoute>
             <MainLayout>
               <ContentDetail />
+            </MainLayout>
+          </PrivateRoute>
+        }
+      />
+
+      <Route
+        path="/oral-check/upload"
+        element={
+          <PrivateRoute>
+            <MainLayout>
+              <OralCheckUpload />
             </MainLayout>
           </PrivateRoute>
         }
