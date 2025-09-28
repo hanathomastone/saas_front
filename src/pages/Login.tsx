@@ -15,13 +15,11 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
-import { useTranslation } from "react-i18next";
 
 export default function Login() {
-  const { t, i18n } = useTranslation();
-  const navigate = useNavigate();
-
+  const [language, setLanguage] = useState("ko");
   const [focusedField, setFocusedField] = useState<string | null>(null);
+  const navigate = useNavigate();
   const [id, setId] = useState("");
   const [password, setPassword] = useState("");
 
@@ -32,12 +30,6 @@ export default function Login() {
     // 지금은 무조건 로그인 성공 처리
     localStorage.setItem("isAuthenticated", "true");
     navigate("/dashboard");
-  };
-
-  const handleLanguageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const lang = e.target.value;
-    i18n.changeLanguage(lang);
-    localStorage.setItem("lang", lang); // 새로고침해도 유지
   };
 
   return (
@@ -57,8 +49,8 @@ export default function Login() {
 
           {/* 언어 선택 */}
           <Select
-            value={i18n.language}
-            onChange={handleLanguageChange}
+            value={language}
+            onChange={(e) => setLanguage(e.target.value)}
             w="120px"
             borderRadius="md"
             border="1px solid"
@@ -69,7 +61,7 @@ export default function Login() {
           >
             <option value="ko">한국어</option>
             <option value="en">English</option>
-            <option value="vi">Tiếng Việt</option>
+            <option value="vi">베트남어</option>
           </Select>
         </Flex>
 
@@ -93,7 +85,7 @@ export default function Login() {
               }}
               flex="1"
             >
-              {t("personal_member")}
+              개인 회원
             </Tab>
             <Tab
               _selected={{
@@ -104,7 +96,7 @@ export default function Login() {
               flex="1"
               color="gray.400"
             >
-              {t("admin_member")}
+              관리자 회원
             </Tab>
           </TabList>
         </Tabs>
@@ -112,7 +104,7 @@ export default function Login() {
         {/* Input Fields */}
         <Box mb={4}>
           <FormControl>
-            <FormLabel>{t("id")}</FormLabel>
+            <FormLabel>아이디</FormLabel>
             <Input
               type="text"
               value={id}
@@ -130,7 +122,7 @@ export default function Login() {
 
         <Box mb={6}>
           <FormControl>
-            <FormLabel>{t("password")}</FormLabel>
+            <FormLabel>비밀번호</FormLabel>
             <Input
               type="password"
               value={password}
@@ -154,26 +146,26 @@ export default function Login() {
           mb={4}
           onClick={handleLogin}
         >
-          {t("login")}
+          로그인
         </Button>
 
         {/* Footer Links */}
         <Flex justify="center" gap={4} mt={4} fontSize="sm" color="gray.500">
           <RouterLink to="/register/verify">
             <Text as="span" color="blue.500" cursor="pointer">
-              {t("register")}
+              회원가입
             </Text>
           </RouterLink>
           <Text>|</Text>
           <RouterLink to="/find-password">
             <Text as="span" color="blue.500" cursor="pointer">
-              {t("find_password")}
+              비밀번호 찾기
             </Text>
           </RouterLink>
           <Text>|</Text>
           <RouterLink to="/contact" state={{ from: "login" }}>
             <Text as="span" color="blue.500" cursor="pointer">
-              {t("contact")}
+              문의하기
             </Text>
           </RouterLink>
         </Flex>

@@ -1,18 +1,14 @@
-import api from "./client";
+// src/api/auth.ts
+import api from "./api";
+import type { LoginRequest, LoginResponse } from "../types/auth";
 
-export interface LoginRequest {
-  userType: "admin" | "user";
-  loginId: string;
-  password: string;
-}
+export const loginApi = async (
+  payload: LoginRequest
+): Promise<LoginResponse> => {
+  const res = await api.post<LoginResponse>("/login", payload);
 
-export interface LoginResponse {
-  accessToken: string;
-  refreshToken: string;
-  userId?: number;
-  username?: string;
-  role?: string;
-}
-
-export const loginApi = (data: LoginRequest) =>
-  api.post<LoginResponse>("/login", data);
+  if (res.status !== 200 || !res.data.accessToken) {
+    throw new Error("로그인 실패");
+  }
+  return res.data;
+};

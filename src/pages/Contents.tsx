@@ -3,7 +3,8 @@ import {
   Box,
   Text,
   Image,
-  SimpleGrid,
+  Grid,
+  GridItem,
   Badge,
   Spinner,
   Flex,
@@ -59,76 +60,89 @@ const Contents: React.FC = () => {
   }
 
   return (
-    <Box p={6}>
+    <Box p={6} maxW="1200px" mx="auto">
       <Text fontSize="2xl" fontWeight="bold" mb={6}>
         {t("contents_list")}
       </Text>
+      <Box p={6} maxW="1200px" mx="auto">
+        {/* ✅ 반응형 카드 배치 (minmax) */}
+        <Grid
+          templateColumns={[
+            "repeat(2, 1fr)", // 📱 모바일: 2개
+            "repeat(3, 1fr)", // 💻 태블릿: 3개
+            "repeat(4, 1fr)", // 🖥️ 데스크탑: 4개
+          ]}
+          gap={6}
+        >
+          {contents.map((item) => {
+            const contentCategories = categories.filter((cat) =>
+              item.categoryIds.includes(cat.id)
+            );
 
-      <SimpleGrid columns={[1, 2, 3]} spacing={6}>
-        {contents.map((item) => {
-          const contentCategories = categories.filter((cat) =>
-            item.categoryIds.includes(cat.id)
-          );
+            return (
+              <GridItem
+                key={item.id}
+                borderWidth="1px"
+                borderRadius="lg"
+                overflow="hidden"
+                shadow="sm"
+                bg="white"
+                cursor="pointer"
+                _hover={{ shadow: "md" }}
+                onClick={() =>
+                  navigate(`/contents/${item.id}`, { state: { content: item } })
+                }
+              >
+                {/* 이미지 */}
+                <Image
+                  src={item.thumbnail}
+                  alt={item.title}
+                  w="100%"
+                  h="200px"
+                  objectFit="cover"
+                />
 
-          return (
-            <Box
-              key={item.id}
-              borderRadius="lg"
-              overflow="hidden"
-              shadow="md"
-              cursor="pointer"
-              onClick={() =>
-                navigate(`/contents/${item.id}`, { state: { content: item } })
-              }
-            >
-              {/* 배경 이미지 */}
-              <Image
-                src={item.thumbnail}
-                alt={item.title}
-                w="100%"
-                h="180px"
-                objectFit="cover"
-              />
-
-              {/* 하단 정보 박스 */}
-              <Box p={4}>
-                <Flex gap={2} mb={2} wrap="wrap">
-                  {contentCategories.map((cat) => (
+                {/* 내용 */}
+                <Box p={4}>
+                  <Flex gap={2} mb={2} wrap="wrap">
+                    {contentCategories.map((cat) => (
+                      <Badge
+                        key={cat.id}
+                        borderRadius="full"
+                        px={3}
+                        py={1}
+                        fontSize="xs"
+                        bg={cat.color || "gray.500"}
+                        color="white"
+                      >
+                        {cat.name}
+                      </Badge>
+                    ))}
                     <Badge
-                      key={cat.id}
                       borderRadius="full"
                       px={3}
                       py={1}
                       fontSize="xs"
-                      bg={cat.color || "gray.500"}
+                      bg={item.typeColor}
                       color="white"
                     >
-                      {cat.name}
+                      {item.type === "CARD"
+                        ? t("type_card")
+                        : item.type === "VIDEO"
+                        ? t("type_video")
+                        : t("type_animation")}
                     </Badge>
-                  ))}
-                  <Badge
-                    borderRadius="full"
-                    px={3}
-                    py={1}
-                    fontSize="xs"
-                    bg={item.typeColor}
-                    color="white"
-                  >
-                    {item.type === "CARD"
-                      ? t("type_card")
-                      : item.type === "VIDEO"
-                      ? t("type_video")
-                      : t("type_animation")}
-                  </Badge>
-                </Flex>
-                <Text fontWeight="bold" noOfLines={2}>
-                  {item.title}
-                </Text>
-              </Box>
-            </Box>
-          );
-        })}
-      </SimpleGrid>
+                  </Flex>
+
+                  <Text fontWeight="bold" noOfLines={2}>
+                    {item.title}
+                  </Text>
+                </Box>
+              </GridItem>
+            );
+          })}
+        </Grid>
+      </Box>
     </Box>
   );
 };
