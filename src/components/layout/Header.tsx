@@ -43,7 +43,7 @@ export default function Header() {
       {/* 로고 */}
       <Box>
         <RouterLink to="/dashboard">
-          <Image src="/images/logo.png" alt="Logo" h="28px" />
+          <Image src="/images/DentiGlobal.png" alt="Logo" h="28px" />
         </RouterLink>
       </Box>
 
@@ -72,8 +72,8 @@ export default function Header() {
             구강검진
           </MenuButton>
           <MenuList>
-            <MenuItem as={RouterLink} to="/oral-check/capture">
-              구강검진 촬영
+            <MenuItem as={RouterLink} to="/oral-check">
+              구강검진
             </MenuItem>
             <MenuItem as={RouterLink} to="/oral-check/result">
               구강검진 결과

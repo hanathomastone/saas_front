@@ -1,176 +1,78 @@
 import React from "react";
-import { useTranslation } from "react-i18next";
+import { Box, Button, Flex, Heading, Image, Text } from "@chakra-ui/react";
+import { useLocation, useNavigate } from "react-router-dom";
 
-function OralCheckResult() {
-  const { t } = useTranslation();
+const OralCheckResult: React.FC = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
 
-  const userName = "홍길동"; // ⚠️ 실제로는 로그인/참여자 이름 받아오기
-  const examDate = "2023.06.06";
+  // ✅ 업로드 후 navigate에서 받은 result
+  const result = location.state?.result;
+
+  if (!result) {
+    return (
+      <Flex direction="column" align="center" justify="center" h="100vh">
+        <Heading size="md" mb={4}>
+          결과 없음
+        </Heading>
+        <Text>검진 결과 데이터가 없습니다. 다시 촬영해주세요.</Text>
+        <Button mt={6} onClick={() => navigate("/oral-check/camera")}>
+          다시 촬영하기
+        </Button>
+      </Flex>
+    );
+  }
 
   return (
-    <div style={{ background: "#f5f5f5", minHeight: "100vh", padding: "1rem" }}>
-      {/* 상단 제목 */}
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          marginBottom: "1rem",
-        }}
-      >
-        <h2 style={{ fontWeight: "bold" }}>{t("oral_result_title")}</h2>
-        <button
-          style={{
-            border: "none",
-            background: "transparent",
-            color: "#0B57D0",
-            fontWeight: "bold",
-            cursor: "pointer",
-          }}
-        >
-          {t("done")}
-        </button>
-      </div>
+    <Box p={6} maxW="600px" mx="auto">
+      <Heading size="lg" mb={6}>
+        구강검진 결과
+      </Heading>
 
-      {/* 요약 카드 */}
-      <div
-        style={{
-          background: "white",
-          borderRadius: "12px",
-          padding: "1rem",
-          marginBottom: "1rem",
-        }}
-      >
-        <p style={{ color: "#888", fontSize: "0.9rem" }}>{examDate}</p>
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          <p style={{ fontSize: "1rem", fontWeight: "bold" }}>
-            {t("oral_result_summary", {
-              name: userName,
-              status: t("healthy"),
-            })}
-          </p>
-          <div
-            style={{
-              width: "40px",
-              height: "40px",
-              borderRadius: "50%",
-              background: "#0B57D0",
-            }}
+      {/* 업로드된 이미지 */}
+      {result.response?.imageUrl && (
+        <Box mb={6} textAlign="center">
+          <Image
+            src={result.response.imageUrl}
+            alt="검진 이미지"
+            maxW="400px"
+            mx="auto"
+            borderRadius="md"
+            border="1px solid #ddd"
           />
-        </div>
-      </div>
+          <Text fontSize="sm" color="gray.500" mt={2}>
+            촬영된 이미지
+          </Text>
+        </Box>
+      )}
 
-      {/* 검사 결과 요약 */}
-      <div
-        style={{
-          background: "white",
-          borderRadius: "12px",
-          padding: "1rem",
-          marginBottom: "1rem",
-        }}
-      >
-        <h3 style={{ fontWeight: "bold", marginBottom: "0.5rem" }}>
-          {t("oral_result_detail_title", { name: userName })}
-        </h3>
-        <p style={{ fontWeight: "bold", marginTop: "0.5rem" }}>
-          {t("overall_oral_status")}
-        </p>
-        <p>
-          {t("average_plaque")}:{" "}
-          <span style={{ fontWeight: "bold" }}>4.6%</span>{" "}
-          <span style={{ color: "#0B57D0", fontWeight: "bold" }}>
-            {t("healthy")}
-          </span>
-        </p>
+      {/* 분석 결과 텍스트 (예시) */}
+      <Box bg="gray.50" p={4} borderRadius="md" shadow="sm">
+        <Text fontSize="md" fontWeight="bold" mb={2}>
+          분석 결과
+        </Text>
+        <Text>
+          {result.response?.analysis
+            ? result.response.analysis
+            : "분석 결과가 없습니다."}
+        </Text>
+      </Box>
 
-        <p style={{ fontWeight: "bold", marginTop: "1rem" }}>
-          {t("area_oral_status")}
-        </p>
-        <ul style={{ listStyle: "none", padding: 0 }}>
-          <li>
-            {t("upper_right")} → {t("plaque")}: 3.4%{" "}
-            <span style={{ color: "#0B57D0" }}>{t("healthy")}</span>
-          </li>
-          <li>
-            {t("upper_left")} → {t("plaque")}: 4.4%{" "}
-            <span style={{ color: "#0B57D0" }}>{t("healthy")}</span>
-          </li>
-          <li>
-            {t("lower_left")} → {t("plaque")}: 2.4%{" "}
-            <span style={{ color: "#0B57D0" }}>{t("healthy")}</span>
-          </li>
-          <li>
-            {t("lower_right")} → {t("plaque")}: 8.4%{" "}
-            <span style={{ color: "green" }}>{t("fair")}</span>
-          </li>
-        </ul>
-
-        <p style={{ marginTop: "1rem" }}>
-          {t("oral_result_conclusion")}
-          <br />
-          {t("oral_result_tip", { area: t("lower_left") })}
-        </p>
-      </div>
-
-      {/* 구강 관리 팁 */}
-      <div
-        style={{
-          background: "white",
-          borderRadius: "12px",
-          padding: "1rem",
-          marginBottom: "1rem",
-        }}
-      >
-        <h3 style={{ marginBottom: "0.5rem" }}>{t("oral_tips_title")}</h3>
-        <p>{t("oral_tips_desc", { name: userName })}</p>
-        <p style={{ fontWeight: "bold" }}>{t("oral_tips_cta")}</p>
-        <button
-          style={{
-            background: "#0B57D0",
-            color: "white",
-            border: "none",
-            borderRadius: "8px",
-            padding: "0.8rem 1.2rem",
-            fontWeight: "bold",
-            cursor: "pointer",
-            marginTop: "1rem",
-          }}
+      {/* 버튼들 */}
+      <Flex gap={3} mt={6}>
+        <Button flex="1" onClick={() => navigate("/oral-check/camera")}>
+          다시 촬영하기
+        </Button>
+        <Button
+          flex="1"
+          colorScheme="blue"
+          onClick={() => navigate("/dashboard")}
         >
-          {t("like_button")}
-        </button>
-      </div>
-
-      {/* 안내사항 */}
-      <div
-        style={{
-          background: "white",
-          borderRadius: "12px",
-          padding: "1rem",
-          fontSize: "0.85rem",
-          color: "#555",
-        }}
-      >
-        <h4 style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-          <span
-            style={{
-              width: "12px",
-              height: "12px",
-              background: "#ccc",
-              borderRadius: "50%",
-              display: "inline-block",
-            }}
-          ></span>
-          {t("notice")}
-        </h4>
-        <p style={{ marginTop: "0.5rem" }}>{t("oral_result_notice_text")}</p>
-      </div>
-    </div>
+          대시보드로 이동
+        </Button>
+      </Flex>
+    </Box>
   );
-}
+};
 
 export default OralCheckResult;

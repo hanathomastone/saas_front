@@ -1,152 +1,171 @@
-import { useState } from "react";
 import {
   Box,
   Button,
-  Checkbox,
-  Divider,
   Flex,
   FormControl,
   FormLabel,
   Heading,
   Input,
-  Stack,
   Text,
+  VStack,
   useToast,
 } from "@chakra-ui/react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useTranslation } from "react-i18next";
+import api from "../api/api";
+import axios from "axios"; // 👈 isAxiosError 사용
+
+type VerifyForm = {
+  userName: string;
+  userPhoneNumber: string;
+};
 
 export default function RegisterVerify() {
+  const [form, setForm] = useState<VerifyForm>({
+    userName: "",
+    userPhoneNumber: "",
+  });
+  const [loading, setLoading] = useState(false);
+
   const navigate = useNavigate();
   const toast = useToast();
-  const { t } = useTranslation();
 
-  const [phone, setPhone] = useState("");
-  const [name, setName] = useState("");
-  const [terms, setTerms] = useState({
-    service: false,
-    privacy: false,
-    marketing: false,
-  });
-
-  const [allChecked, setAllChecked] = useState(false);
-
-  // 전체 동의 체크 시 모든 항목 체크
-  const handleAllCheck = (checked: boolean) => {
-    setAllChecked(checked);
-    setTerms({
-      service: checked,
-      privacy: checked,
-      marketing: checked,
-    });
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  // 단일 체크 시 전체동의 업데이트
-  const handleSingleCheck = (key: keyof typeof terms, checked: boolean) => {
-    setTerms({ ...terms, [key]: checked });
-    if (checked && Object.values({ ...terms, [key]: checked }).every(Boolean)) {
-      setAllChecked(true);
-    } else {
-      setAllChecked(false);
+  const handleVerify = async () => {
+    if (!form.userName || !form.userPhoneNumber) {
+      toast({
+        title: "이름과 전화번호를 입력해주세요.",
+        status: "warning",
+        duration: 2500,
+        isClosable: true,
+      });
+      return;
     }
-  };
 
-  const handleNext = () => {
-    if (!phone || !name) {
-      toast({ title: t("enter_phone_and_name"), status: "warning" });
-      return;
+    try {
+      setLoading(true);
+
+      // ✅ 회원가입 확인
+      const res = await api.post("/login/verify", form);
+      const userId: number | null = res.data?.response?.userId ?? null;
+
+      if (userId) {
+        toast({
+          title: "이미 가입된 사용자입니다. 로그인해주세요.",
+          status: "info",
+          duration: 2500,
+          isClosable: true,
+        });
+        navigate("/login");
+      } else {
+        toast({
+          title: "본인 확인 완료",
+          description: "회원가입 단계로 이동합니다.",
+          status: "success",
+          duration: 2500,
+          isClosable: true,
+        });
+        // 가입 폼으로 값 전달
+        navigate("/register/form", { state: form });
+      }
+    } catch (error: unknown) {
+      // 👇 any 대신 unknown + 안전한 분기
+      const msg = axios.isAxiosError(error)
+        ? (error.response?.data as { rtMsg?: string } | undefined)?.rtMsg ??
+          "입력 정보를 확인해주세요."
+        : "오류가 발생했습니다.";
+      toast({
+        title: "본인 확인 실패",
+        description: msg,
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    } finally {
+      setLoading(false);
     }
-    if (!terms.service || !terms.privacy) {
-      toast({ title: t("accept_required_terms"), status: "error" });
-      return;
-    }
-    // 인증 성공 → 회원가입 폼으로 이동
-    navigate("/register/form");
   };
 
   return (
-    <Box p={6} maxW="400px" mx="auto">
-      {/* 헤더 */}
-      <Flex align="center" mb={4}>
-        <Button variant="ghost" p={0} minW="auto" onClick={() => navigate(-1)}>
-          ←
-        </Button>
-        <Heading size="sm" ml={2}>
-          {t("verify_member")}
-        </Heading>
-      </Flex>
-
-      {/* Progress */}
-      <Box h="2px" bg="gray.200" mb={6}>
-        <Box h="2px" w="33%" bg="blue.500"></Box>
-      </Box>
-
-      <Heading size="md" mb={2}>
-        {t("verify_member_title")}
-      </Heading>
-      <Text color="gray.600" mb={6}>
-        {t("verify_member_description")}
-      </Text>
-
-      {/* Phone */}
-      <FormControl mb={4}>
-        <FormLabel>{t("enter_phone")}</FormLabel>
-        <Input
-          placeholder={t("phone_placeholder")}
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
-        />
-      </FormControl>
-
-      {/* Name */}
-      <FormControl mb={6}>
-        <FormLabel>{t("enter_name")}</FormLabel>
-        <Input
-          placeholder={t("name_placeholder")}
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
-      </FormControl>
-
-      {/* 약관 동의 */}
-      <Stack spacing={3} mb={6}>
-        <Checkbox
-          isChecked={allChecked}
-          onChange={(e) => handleAllCheck(e.target.checked)}
-        >
-          {t("agree_all")}
-        </Checkbox>
-        <Divider />
-        <Checkbox
-          isChecked={terms.service}
-          onChange={(e) => handleSingleCheck("service", e.target.checked)}
-        >
-          {t("agree_service")}
-        </Checkbox>
-        <Checkbox
-          isChecked={terms.privacy}
-          onChange={(e) => handleSingleCheck("privacy", e.target.checked)}
-        >
-          {t("agree_privacy")}
-        </Checkbox>
-        <Checkbox
-          isChecked={terms.marketing}
-          onChange={(e) => handleSingleCheck("marketing", e.target.checked)}
-        >
-          {t("agree_marketing")}
-        </Checkbox>
-      </Stack>
-
-      {/* Next Button */}
-      <Button
-        colorScheme="blue"
-        w="100%"
-        h="50px"
-        onClick={handleNext}
-        isDisabled={!phone || !name}
+    <Flex minH="100vh" align="center" justify="center" bg="gray.50">
+      <Flex
+        w="900px"
+        h="500px"
+        bg="white"
+        borderRadius="md"
+        overflow="hidden"
+        shadow="lg"
       >
-        {t("next")}
-      </Button>
-    </Box>
+        {/* 왼쪽 영역 */}
+        <Flex
+          flex="1"
+          bg="blue.600"
+          color="white"
+          direction="column"
+          align="center"
+          justify="center"
+          p={8}
+        >
+          <Heading size="md" mb={4}>
+            Hello, welcome to!
+          </Heading>
+          <Box mb={4}>
+            <img src="/images/logo.png" alt="logo" width="80" />
+          </Box>
+          <Text textAlign="center" mb={6}>
+            간단한 정보를 입력해 본인 확인을 진행하세요.
+          </Text>
+          <Button
+            variant="outline"
+            color="white"
+            onClick={() => navigate("/login")}
+          >
+            SIGN IN ▶
+          </Button>
+        </Flex>
+
+        {/* 오른쪽 영역 */}
+        <Flex flex="1.2" direction="column" p={10} justify="center">
+          <Heading size="lg" mb={6}>
+            Verify your account
+          </Heading>
+          <VStack spacing={5} align="stretch">
+            <FormControl>
+              <FormLabel>이름</FormLabel>
+              <Input
+                name="userName"
+                value={form.userName}
+                onChange={handleChange}
+                placeholder="홍길동"
+              />
+            </FormControl>
+
+            <FormControl>
+              <FormLabel>전화번호</FormLabel>
+              <Input
+                name="userPhoneNumber"
+                value={form.userPhoneNumber}
+                onChange={handleChange}
+                placeholder="01012345678"
+              />
+            </FormControl>
+
+            <Button
+              colorScheme="blue"
+              w="100%"
+              h="50px"
+              onClick={handleVerify}
+              isLoading={loading}
+            >
+              확인
+            </Button>
+          </VStack>
+        </Flex>
+      </Flex>
+    </Flex>
   );
 }

@@ -17,6 +17,9 @@ import OralCheckResult from "../pages/OralCheckResult";
 import OralStatusPage from "../pages/OralStatusPage";
 import UserPage from "../pages/UserPage";
 import Questionnaire from "../pages/Questionnaire";
+import OralCheckPage from "../pages/OralCheckPage";
+import OralCheckCamera from "../pages/OralCheckCamera";
+import OralCheckUpload from "../pages/OralCheckUpload";
 // 레이아웃 & 라우팅 헬퍼
 import MainLayout from "../components/layout/MainLayout";
 import PrivateRoute from "./PrivateRoute";
@@ -99,6 +102,16 @@ export default function AppRoutes() {
           </PrivateRoute>
         }
       />
+      <Route
+        path="/oral-check"
+        element={
+          <PrivateRoute>
+            <MainLayout>
+              <OralCheckPage />
+            </MainLayout>
+          </PrivateRoute>
+        }
+      />
 
       <Route
         path="/questionnaire"
@@ -106,6 +119,28 @@ export default function AppRoutes() {
           <PrivateRoute>
             <MainLayout>
               <Questionnaire />
+            </MainLayout>
+          </PrivateRoute>
+        }
+      />
+
+      <Route
+        path="/oral-check/camera"
+        element={
+          <PrivateRoute>
+            <MainLayout>
+              <OralCheckCamera />
+            </MainLayout>
+          </PrivateRoute>
+        }
+      />
+
+      <Route
+        path="/oral-check/upload"
+        element={
+          <PrivateRoute>
+            <MainLayout>
+              <OralCheckUpload />
             </MainLayout>
           </PrivateRoute>
         }
