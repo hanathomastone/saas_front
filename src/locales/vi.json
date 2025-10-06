@@ -206,5 +206,16 @@
     "upload_and_analyze": "Tải lên & Phân tích",
     "no_file": "Vui lòng chọn một tệp.",
     "upload_success": "Tải lên thành công!"
+  },
+  "menu": {
+    "home": "Trang chủ",
+    "contents": "Nội dung",
+    "contentsView": "Xem nội dung",
+    "oralCheck": "Khám răng miệng",
+    "oralCheckMain": "Khám răng miệng",
+    "oralCheckResult": "Kết quả khám",
+    "oralStatus": "Tình trạng răng miệng",
+    "surveyWrite": "Điền bảng khảo sát",
+    "oralStatusView": "Xem tình trạng răng miệng"
   }
 }

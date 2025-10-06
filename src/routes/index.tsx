@@ -23,6 +23,7 @@ import OralCheckUpload from "../pages/OralCheckUpload";
 // 레이아웃 & 라우팅 헬퍼
 import MainLayout from "../components/layout/MainLayout";
 import PrivateRoute from "./PrivateRoute";
+import OralQuestionnaireResult from "../pages/OralQuestionnarieResult";
 
 export default function AppRoutes() {
   return (
@@ -119,6 +120,16 @@ export default function AppRoutes() {
           <PrivateRoute>
             <MainLayout>
               <Questionnaire />
+            </MainLayout>
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/questionnaire/result"
+        element={
+          <PrivateRoute>
+            <MainLayout>
+              <OralQuestionnaireResult />
             </MainLayout>
           </PrivateRoute>
         }

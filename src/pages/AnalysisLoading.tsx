@@ -1,60 +1,65 @@
-// AnalysisLoading.tsx
-import { Box, VStack, Text, Button, HStack } from "@chakra-ui/react";
-import { keyframes } from "@emotion/react"; // ✅ 요기로 변경
+import { Box, Button, Flex, Spinner, Text } from "@chakra-ui/react";
 
-const bounce = keyframes`
-  0%, 80%, 100% { transform: scale(0); }
-  40% { transform: scale(1.0); }
-`;
-
-export default function AnalysisLoading({
-  onCancel,
-}: {
+interface AnalyzingScreenProps {
+  name: string;
   onCancel: () => void;
-}) {
+}
+
+export default function AnalyzingScreen({ name, onCancel }: AnalyzingScreenProps) {
   return (
-    <Box
-      p={8}
-      borderRadius="lg"
+    <Flex
+      direction="column"
+      align="center"
+      justify="center"
+      minH="100vh"
       bg="white"
-      shadow="md"
-      textAlign="center"
-      w="full"
-      maxW="sm"
-      mx="auto"
+      p={6}
     >
-      <VStack spacing={6}>
-        <Text fontWeight="bold" fontSize="lg" lineHeight="1.6">
-          잠시만 기다려 주세요! <br />
-          <Text as="span" color="blue.500">
-            홍길동
-          </Text>
-          님의 <br />
-          <Text as="span" color="blue.600">
-            구강상태를 분석중
-          </Text>
-          입니다!
+      <Box
+        border="2px solid"
+        borderColor="blue.300"
+        borderRadius="md"
+        p={8}
+        maxW="350px"
+        w="100%"
+        textAlign="center"
+        boxShadow="md"
+      >
+        {/* 안내 문구 */}
+        <Text fontSize="lg" fontWeight="bold" mb={6}>
+          {name} 님의 구강상태를 <br />
+          분석중입니다... <br />
+          잠시만 기다려주세요!
         </Text>
 
-        {/* 점프하는 점 3개 */}
-        <HStack spacing={2}>
-          {[0, 1, 2].map((i) => (
-            <Box
-              key={i}
-              w="12px"
-              h="12px"
-              borderRadius="full"
-              bg="blue.500"
-              animation={`${bounce} 1.4s infinite ease-in-out`}
-              style={{ animationDelay: `${i * 0.2}s` }}
-            />
-          ))}
-        </HStack>
+        {/* 원형 로딩 영역 */}
+        <Box
+          w="80px"
+          h="80px"
+          borderRadius="full"
+          bg="gray.200"
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+          mx="auto"
+          mb={8}
+        >
+          <Spinner size="lg" color="gray.500" thickness="4px" />
+        </Box>
 
-        <Button variant="outline" onClick={onCancel}>
+        {/* 취소 버튼 */}
+        <Button
+          w="100%"
+          h="50px"
+          borderRadius="md"
+          bg="gray.500"
+          color="white"
+          _hover={{ bg: "gray.600" }}
+          onClick={onCancel}
+        >
           취소하기
         </Button>
-      </VStack>
-    </Box>
+      </Box>
+    </Flex>
   );
 }

@@ -192,5 +192,17 @@
     "upload_and_analyze": "Upload & Analyze",
     "no_file": "Please select a file.",
     "upload_success": "Upload successful!"
+  },
+
+  "menu": {
+    "home": "Home",
+    "contents": "Contents",
+    "contentsView": "View Contents",
+    "oralCheck": "Oral Check",
+    "oralCheckMain": "Oral Check",
+    "oralCheckResult": "Oral Check Results",
+    "oralStatus": "Oral Status",
+    "surveyWrite": "Fill Out Survey",
+    "oralStatusView": "View Oral Status"
   }
 }

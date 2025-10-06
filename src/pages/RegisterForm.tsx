@@ -65,11 +65,13 @@ export default function RegisterForm() {
   const mkt = useDisclosure();
 
   const [idChecked, setIdChecked] = useState(false);
+  const [selectedService, setSelectedService] = useState<string>("");
+
   useEffect(() => {
     setIdChecked(false); // 아이디 값 바뀔 때마다 초기화
   }, [userLoginIdentifier]);
 
-  // ✅ 질문 리스트 불러오기 (/password/questions → response.questions)
+  // ✅ 질문 리스트 불러오기
   useEffect(() => {
     const fetchQuestions = async () => {
       try {
@@ -84,7 +86,7 @@ export default function RegisterForm() {
     fetchQuestions();
   }, [toast]);
 
-  // ✅ 아이디 중복확인 (/login/loginIdentifier-check)
+  // ✅ 아이디 중복확인
   const handleCheckId = async () => {
     if (!userLoginIdentifier) {
       toast({ title: "아이디를 입력하세요.", status: "warning" });
@@ -128,6 +130,7 @@ export default function RegisterForm() {
     setAllChecked(updated.service && updated.privacy && updated.marketing);
   };
 
+  // ✅ 회원가입 처리
   const handleRegister = async () => {
     if (!idChecked) {
       toast({ title: "아이디 중복확인을 해주세요.", status: "warning" });
@@ -148,6 +151,10 @@ export default function RegisterForm() {
       });
       return;
     }
+    if (!selectedService) {
+      toast({ title: "이용하려는 서비스를 선택해주세요.", status: "error" });
+      return;
+    }
     if (!terms.service || !terms.privacy) {
       toast({ title: "필수 약관에 동의해야 합니다.", status: "error" });
       return;
@@ -163,6 +170,7 @@ export default function RegisterForm() {
         userPassword: password,
         findPwdQuestionId,
         findPwdAnswer,
+        selectedService, // ✅ 선택된 서비스 전달
         userServiceAgreementRequest: {
           service: terms.service,
           privacy: terms.privacy,
@@ -279,6 +287,20 @@ export default function RegisterForm() {
           />
         </FormControl>
 
+        {/* ✅ 이용하려는 서비스 선택 */}
+        <FormControl mb={6}>
+          <FormLabel fontWeight="bold">이용하려는 서비스</FormLabel>
+          <RadioGroup
+            value={selectedService}
+            onChange={(v) => setSelectedService(v)}
+          >
+            <Stack direction="row">
+              <Radio value="플라그 검출">플라그 검출</Radio>
+              <Radio value="치은염 검출">치은염 검출</Radio>
+            </Stack>
+          </RadioGroup>
+        </FormControl>
+
         {/* 약관 동의 */}
         <VStack align="stretch" spacing={3} mb={6}>
           <Checkbox
@@ -335,12 +357,7 @@ export default function RegisterForm() {
       </Box>
 
       {/* 약관 모달 */}
-      <Modal
-        isOpen={svc.isOpen}
-        onClose={svc.onClose}
-        size="lg"
-        scrollBehavior="inside"
-      >
+      <Modal isOpen={svc.isOpen} onClose={svc.onClose} size="lg" scrollBehavior="inside">
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>서비스 이용약관</ModalHeader>
@@ -354,12 +371,7 @@ export default function RegisterForm() {
         </ModalContent>
       </Modal>
 
-      <Modal
-        isOpen={prv.isOpen}
-        onClose={prv.onClose}
-        size="lg"
-        scrollBehavior="inside"
-      >
+      <Modal isOpen={prv.isOpen} onClose={prv.onClose} size="lg" scrollBehavior="inside">
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>개인정보 수집 및 이용 동의</ModalHeader>
@@ -373,12 +385,7 @@ export default function RegisterForm() {
         </ModalContent>
       </Modal>
 
-      <Modal
-        isOpen={mkt.isOpen}
-        onClose={mkt.onClose}
-        size="lg"
-        scrollBehavior="inside"
-      >
+      <Modal isOpen={mkt.isOpen} onClose={mkt.onClose} size="lg" scrollBehavior="inside">
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>마케팅 정보 수신 동의</ModalHeader>

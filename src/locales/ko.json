@@ -220,5 +220,23 @@
     "upload_and_analyze": "업로드 & 분석하기",
     "no_file": "파일을 선택해주세요.",
     "upload_success": "업로드 완료!"
-  }
+  },
+
+  "menu": {
+    "home": "홈",
+    "contents": "콘텐츠",
+    "contentsView": "콘텐츠 보기",
+    "oralCheck": "구강검진",
+    "oralCheckMain": "구강검진",
+    "oralCheckResult": "구강검진 결과",
+    "oralStatus": "구강상태",
+    "surveyWrite": "문진표 작성",
+    "oralStatusView": "구강상태 조회"
+  },
+
+  "oral_method_upload_badge": "파일 업로드",
+  "oral_method_camera_badge": "구강 촬영",
+  "oral_upload_choose_file": "파일 선택하기",
+
+  "oral_upload_submit": "파일 제출하기"
 }

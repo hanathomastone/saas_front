@@ -1,5 +1,14 @@
 import React, { useState } from "react";
-import { Button, Flex, Text, VStack, Image, Input } from "@chakra-ui/react";
+import {
+  Button,
+  Flex,
+  Text,
+  VStack,
+  Image,
+  Input,
+  Box,
+  useBreakpointValue,
+} from "@chakra-ui/react";
 import { useTranslation } from "react-i18next";
 
 const OralCheckUpload: React.FC = () => {
@@ -26,46 +35,94 @@ const OralCheckUpload: React.FC = () => {
     alert(t("oral_upload_success"));
   };
 
+  const containerPadding = useBreakpointValue({ base: 4, md: 8 });
+  const cardWidth = useBreakpointValue({ base: "100%", md: "400px" });
+
   return (
-    <Flex direction="column" align="center" p={6}>
-      <VStack spacing={4} w="100%" maxW="400px">
-        <Text fontWeight="bold" fontSize="lg">
-          {t("oral_upload_title")}
-        </Text>
+    <Flex
+  direction="column"
+  align="center"
+  px={containerPadding}
+  py={{ base: 8, md: 16 }}   // ✅ 상단에서 여백만 줌
+  bg="gray.50"
+  minH="100vh"
+>
+  <Box
+    bg="white"
+    p={{ base: 4, md: 6 }}
+    rounded="lg"
+    shadow="md"
+    w={cardWidth}
+  >
+        <VStack spacing={4} w="100%">
+          <Text fontWeight="bold" fontSize={{ base: "md", md: "lg" }}>
+            {t("oral_upload_title")}
+          </Text>
 
-        {/* ✅ 기본 input 숨기고 label 버튼으로 커스텀 */}
-        <Input
-          type="file"
-          accept="image/*"
-          id="file-upload"
-          display="none"
-          onChange={handleFileChange}
-        />
-
-        <Button as="label" htmlFor="file-upload" colorScheme="blue" w="100%">
-          {t("oral_upload_choose_file")}
-        </Button>
-
-        {/* 선택된 파일명 표시 */}
-        <Text fontSize="sm" color="gray.600">
-          {file ? file.name : t("oral_upload_no_file")}
-        </Text>
-
-        {preview && (
-          <Image
-            src={preview}
-            alt="미리보기"
-            maxH="200px"
+          {/* ✅ Drag & Drop 업로드 박스 */}
+          <Box
+            border="2px dashed"
+            borderColor="gray.300"
             borderRadius="md"
-            border="1px solid"
-            borderColor="gray.200"
-          />
-        )}
+            w="100%"
+            h="200px"
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+            cursor="pointer"
+            position="relative"
+            overflow="hidden"
+          >
+            {/* 미리보기 or 기본 UI */}
+            {preview ? (
+              <Image
+                src={preview}
+                alt="미리보기"
+                w="100%"
+                h="100%"
+                objectFit="contain"
+              />
+            ) : (
+              <VStack spacing={2}>
+                <Box fontSize="3xl">📄</Box>
+                <Text fontWeight="bold">Select Files to Upload</Text>
+                <Text fontSize="sm" color="gray.500">
+                  or Drag and Drop, Copy and Paste Files
+                </Text>
+              </VStack>
+            )}
 
-        <Button colorScheme="blue" onClick={handleUpload} w="100%">
-          {t("oral_upload_submit")}
-        </Button>
-      </VStack>
+            {/* 실제 input 파일 */}
+            <Input
+              type="file"
+              accept="image/*"
+              id="file-upload"
+              position="absolute"
+              top={0}
+              left={0}
+              w="100%"
+              h="100%"
+              opacity={0}
+              cursor="pointer"
+              onChange={handleFileChange}
+            />
+          </Box>
+
+          {/* 선택된 파일명 표시 */}
+          <Text fontSize="sm" color="gray.600" noOfLines={1} w="100%" textAlign="center">
+            {file ? file.name : ""}
+          </Text>
+
+          <Button
+            colorScheme="blue"
+            onClick={handleUpload}
+            w="100%"
+            size={{ base: "md", md: "lg" }}
+          >
+            {t("oral_upload_submit")}
+          </Button>
+        </VStack>
+      </Box>
     </Flex>
   );
 };
