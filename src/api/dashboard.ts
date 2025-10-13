@@ -1,7 +1,11 @@
 import api from "./api";
-import type { DataResponse, DashboardDto } from "../types/dashboard";
+import type { DashboardResponse } from "../types/dashboard";
 
-export const getDashboardData = async () => {
-  const res = await api.get<DataResponse<DashboardDto>>("/oral-check/dashboard");
-  return res.data; // ✅ 이제 response 안에 DashboardDto 있음
+export const getDashboardData = async (): Promise<DashboardResponse> => {
+  const res = await api.get<{
+    rt: number;
+    rtMsg: string;
+    response: DashboardResponse;
+  }>("/oralCheck/dashboard");
+  return res.data.response;
 };

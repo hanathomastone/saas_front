@@ -1,5 +1,7 @@
 // src/api/contents.ts
-import api from "./api";  // ✅ 방금 만든 api.ts 불러옴
+import api from "./api";
 
-export const getContents = () => api.get("/contents");
-export const getContentDetail = (id: string) => api.get(`/contents/card?contentsId=${id}`);
+export const getContents = async () => {
+  const res = await api.get("/contents");
+  return res.data;
+};

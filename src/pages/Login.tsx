@@ -15,6 +15,8 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
+import api from "../api"; // ✅ axios 클라이언트
+// import axios from "axios";
 
 export default function Login() {
   const [language, setLanguage] = useState("ko");
@@ -22,14 +24,36 @@ export default function Login() {
   const navigate = useNavigate();
   const [id, setId] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
 
   const handleFocus = (field: string) => setFocusedField(field);
   const handleBlur = () => setFocusedField(null);
 
-  const handleLogin = () => {
-    // 지금은 무조건 로그인 성공 처리
-    localStorage.setItem("isAuthenticated", "true");
-    navigate("/dashboard");
+  const handleLogin = async () => {
+    try {
+      const res = await api.post("/login", {
+        loginId: id,
+        password: password,
+        userType: "user",
+      });
+
+      // ✅ 실패 응답 처리 (rt가 있으면 무조건 실패)
+      if (res.data.rt) {
+        setError(res.data.rtMsg || "로그인 실패");
+        return;
+      }
+
+      // ✅ 성공 응답 처리
+      localStorage.setItem("accessToken", res.data.accessToken);
+      localStorage.setItem("refreshToken", res.data.refreshToken);
+      localStorage.setItem("userName", res.data.userName);
+      localStorage.setItem("userId", res.data.userId.toString());
+
+      navigate("/dashboard");
+    } catch (err) {
+      console.error("로그인 중 오류 발생:", err);
+      setError("로그인 중 오류가 발생했습니다.");
+    }
   };
 
   return (
@@ -149,6 +173,13 @@ export default function Login() {
           로그인
         </Button>
 
+        {/* 에러 메시지 */}
+        {error && (
+          <Text color="red.500" textAlign="center" mb={4}>
+            {error}
+          </Text>
+        )}
+
         {/* Footer Links */}
         <Flex justify="center" gap={4} mt={4} fontSize="sm" color="gray.500">
           <RouterLink to="/register/verify">
@@ -173,3 +204,27 @@ export default function Login() {
     </Flex>
   );
 }
+
+// import { Box, Heading, Button, VStack } from "@chakra-ui/react";
+// import { useNavigate } from "react-router-dom";
+
+// export default function LoginPage() {
+//   const navigate = useNavigate();
+
+//   return (
+//     <Box
+//       minH="100vh"
+//       bg="gray.50"
+//       display="flex"
+//       alignItems="center"
+//       justifyContent="center"
+//     >
+//       <VStack spacing={6} p={10} bg="white" shadow="xl" borderRadius="xl">
+//         <Heading color="blue.600">Denti Global 로그인</Heading>
+//         <Button colorScheme="blue" onClick={() => navigate("/contents")}>
+//           로그인
+//         </Button>
+//       </VStack>
+//     </Box>
+//   );
+// }

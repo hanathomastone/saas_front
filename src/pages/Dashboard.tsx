@@ -1,245 +1,305 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Box,
-  Heading,
+  Container,
   Text,
+  Grid,
   Flex,
+  VStack,
+  HStack,
   Spinner,
-  SimpleGrid,
-  Stat,
-  StatLabel,
-  StatNumber,
-  Card,
-  CardBody,
-  Button,
-  Image,
+  Icon,
+  useColorModeValue,
 } from "@chakra-ui/react";
 import {
+  LineChart,
+  Line,
+  CartesianGrid,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
   PieChart,
   Pie,
   Cell,
-  Legend,
-  Tooltip,
-  ResponsiveContainer,
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
 } from "recharts";
-import { useNavigate } from "react-router-dom";
-import { useTranslation } from "react-i18next";
+import { FiSmile, FiActivity, FiCheckCircle, FiCalendar } from "react-icons/fi";
+import { getOralCheckDashboard } from "../api/oralCheck";
+import type { OralCheckDashboardResponse } from "../api/oralCheck";
 
-// 👉 상태는 숫자로 관리
-const lineData = [
-  { 회차: 9, 상태: 2 },
-  { 회차: 10, 상태: 2 },
-  { 회차: 11, 상태: 3 },
-  { 회차: 12, 상태: 3 },
-  { 회차: 13, 상태: 2 },
-  { 회차: 14, 상태: 1 },
-  { 회차: 15, 상태: 3 },
-  { 회차: 99, 상태: 2 },
-  { 회차: 100, 상태: 3 },
-  { 회차: 101, 상태: 1 },
-];
+// ✅ 상태 매핑
+const statusMap: Record<string, number> = {
+  DANGER: 1,
+  ATTENTION: 2,
+  GOOD: 3,
+  HEALTHY: 4,
+};
+
+// ✅ 색상 매핑
+const COLORS = {
+  HEALTHY: "#3182CE",
+  GOOD: "#38B2AC",
+  ATTENTION: "#ECC94B",
+  DANGER: "#E53E3E",
+};
+interface CardProps {
+  title: string;
+  value: string | number;
+  subText?: string;
+  icon: React.ElementType;
+  iconColor: string;
+  valueColor?: string;
+}
+const StatCard: React.FC<CardProps> = ({
+  title,
+  value,
+  subText,
+  icon,
+  iconColor,
+  valueColor,
+}) => (
+  <Box bg="white" shadow="sm" borderRadius="lg" p={5} textAlign="left">
+    <HStack spacing={3} mb={3}>
+      <Flex
+        w="32px"
+        h="32px"
+        align="center"
+        justify="center"
+        bg={useColorModeValue(`${iconColor}.100`, `${iconColor}.700`)}
+        borderRadius="md"
+      >
+        <Icon as={icon} color={`${iconColor}.500`} />
+      </Flex>
+      <Text fontWeight="bold" fontSize="md">
+        {title}
+      </Text>
+    </HStack>
+
+    <VStack align="flex-start" spacing={1}>
+      <Text fontSize="lg" fontWeight="semibold" color={valueColor || "black"}>
+        {value}
+      </Text>
+      {subText && (
+        <Text fontSize="sm" color="gray.600">
+          {subText}
+        </Text>
+      )}
+    </VStack>
+  </Box>
+);
 
 export default function Dashboard() {
-  const [loadingDashboard] = useState(false);
-  const navigate = useNavigate();
-  const { t } = useTranslation();
+  const [loading, setLoading] = useState(true);
+  const [data, setData] = useState<OralCheckDashboardResponse | null>(null);
 
-  const userName = "TEST";
+  useEffect(() => {
+    getOralCheckDashboard()
+      .then((res) => setData(res))
+      .catch((err) => console.error("대시보드 데이터 불러오기 실패:", err))
+      .finally(() => setLoading(false));
+  }, []);
 
-  // ✅ oralData도 번역 키 사용
-  const oralData = [
-    { name: t("healthy"), value: 3, color: "#3182CE" },
-    { name: t("fair"), value: 1, color: "#38A169" },
-    { name: t("caution"), value: 1, color: "#FFD808" },
-    { name: t("risk"), value: 0, color: "#E53E3E" },
+  if (loading) {
+    return (
+      <Flex justify="center" align="center" minH="100vh">
+        <Spinner size="xl" />
+      </Flex>
+    );
+  }
+
+  if (!data) {
+    return <Text textAlign="center">데이터를 불러오지 못했습니다.</Text>;
+  }
+
+  // ✅ 도넛차트
+  const totalChecks = data.oralCheckTotalCount ?? 0;
+  const healthyRate =
+    totalChecks > 0
+      ? Math.round((data.oralCheckHealthyCount / totalChecks) * 100)
+      : 0;
+
+  const pieData = [
+    { name: "건강", value: data.oralCheckHealthyCount, color: COLORS.HEALTHY },
+    { name: "양호", value: data.oralCheckGoodCount, color: COLORS.GOOD },
+    {
+      name: "주의",
+      value: data.oralCheckAttentionCount,
+      color: COLORS.ATTENTION,
+    },
+    { name: "위험", value: data.oralCheckDangerCount, color: COLORS.DANGER },
   ];
 
-  // ✅ 상태라벨도 번역 키 사용
-  const 상태라벨: Record<number, string> = {
-    1: t("risk"),
-    2: t("caution"),
-    3: t("fair"),
-    4: t("healthy"),
-  };
+  const lineData = data.oralCheckDailyList.map((item) => ({
+    checkNumber: item.oralCheckNumber,
+    status: statusMap[item.oralCheckResultTotalType],
+  }));
 
   return (
-    <Box p={6}>
-      <Flex justify="space-between" align="center" mb={6}>
-        <Heading size="lg">{t("welcome", { name: userName })}</Heading>
+    <Box bg="gray.50" minH="100vh" py={6}>
+      <Container maxW="1200px">
+        <Text fontSize="2xl" fontWeight="bold" mb={6}>
+          구강검진 대시보드
+        </Text>
 
-        <Button
-          colorScheme="blue"
-          variant="outline"
-          onClick={() => navigate("/contents")}
+        {/* 카드 */}
+        <Grid
+          templateColumns={{
+            base: "1fr",
+            sm: "repeat(2, 1fr)",
+            lg: "repeat(4, 1fr)",
+          }}
+          gap={6}
+          mb={8}
         >
-          {t("go_to_contents")}
-        </Button>
-      </Flex>
+          <StatCard
+            title="최근 구강상태"
+            value={data.oralCheckResultTotalType}
+            subText={`최근 검사 ID: ${data.latestOralCheckId}`}
+            icon={FiSmile}
+            iconColor="blue"
+          />
+          <StatCard
+            title="구강검진 수"
+            value={`${data.oralCheckTotalCount}회`}
+            subText={`주기: ${Math.floor(
+              data.oralCheckTimeInterval / 86400
+            )}일`}
+            icon={FiActivity}
+            iconColor="orange"
+          />
+          <StatCard
+            title="양치 수"
+            value={`${data.toothBrushingTotalCount}`}
+            subText={`평균: ${data.toothBrushingAverage}회/일`}
+            icon={FiCheckCircle}
+            iconColor="green"
+          />
+          <StatCard
+            title="구강상태 유형"
+            value={data.oralCheckResultTotalType}
+            subText={`최근 검사일: ${data.questionnaireCreated}`}
+            icon={FiCalendar}
+            iconColor="red"
+            valueColor={
+              data.oralCheckResultTotalType === "HEALTHY"
+                ? "blue.500"
+                : data.oralCheckResultTotalType === "GOOD"
+                ? "green.500"
+                : data.oralCheckResultTotalType === "ATTENTION"
+                ? "orange.400"
+                : data.oralCheckResultTotalType === "DANGER"
+                ? "red.500"
+                : "black"
+            }
+          />
+        </Grid>
 
-      {loadingDashboard ? (
-        <Flex minH="60vh" justify="center" align="center">
-          <Spinner size="xl" />
-        </Flex>
-      ) : (
-        <>
-          {/* 🔹 첫 번째 줄 - 카드 4개 */}
-          <SimpleGrid columns={[1, 2, 4]} spacing={6} mb={6}>
-            <Card>
-              <CardBody textAlign="center">
-                <Heading size="sm" mb={4}>
-                  {t("recent_oral_status")}
-                </Heading>
-                <Image
-                  src="/images/teeth_sample.png"
-                  alt={t("recent_oral_status")}
-                  mx="auto"
-                  mb={4}
-                  boxSize="120px"
+        {/* 그래프 */}
+        <Grid templateColumns={{ base: "1fr", lg: "repeat(2, 1fr)" }} gap={6}>
+          {/* 라인차트 */}
+          <Box bg="white" shadow="sm" borderRadius="lg" p={5}>
+            <Text fontWeight="bold" mb={4}>
+              구강 상태 변화 추이 (*회차)
+            </Text>
+            <ResponsiveContainer width="100%" height={250}>
+              <LineChart data={lineData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="checkNumber" />
+                <YAxis
+                  ticks={[1, 2, 3, 4]}
+                  domain={[1, 4]}
+                  tickFormatter={(v) =>
+                    v === 1
+                      ? "위험"
+                      : v === 2
+                      ? "주의"
+                      : v === 3
+                      ? "양호"
+                      : "건강"
+                  }
                 />
-                <Text>
-                  {t("oral_summary", {
-                    name: userName,
-                    status: t("healthy"),
-                  })}
-                </Text>
-              </CardBody>
-            </Card>
-
-            {/* 검사 횟수 */}
-            <Card>
-              <CardBody>
-                <Image
-                  src="/images/count.png"
-                  mx="auto"
-                  mb={4}
-                  boxSize="120px"
+                <Tooltip
+                  formatter={(v) =>
+                    v === 1
+                      ? "위험"
+                      : v === 2
+                      ? "주의"
+                      : v === 3
+                      ? "양호"
+                      : "건강"
+                  }
+                  labelFormatter={(label) => `검진 ${label}회`}
                 />
-                <Stat textAlign="center">
-                  <StatLabel fontWeight="bold">{t("exam_count")}</StatLabel>
-                  <StatNumber>4</StatNumber>
-                  <Text fontSize="sm">{t("weekly_recommendation")}</Text>
-                </Stat>
-              </CardBody>
-            </Card>
-
-            {/* 양치 수 */}
-            <Card>
-              <CardBody>
-                <Image
-                  src="/images/toothbrush.png"
-                  mx="auto"
-                  mb={4}
-                  boxSize="120px"
+                <Line
+                  type="monotone"
+                  dataKey="status"
+                  stroke="#2B6CB0"
+                  strokeWidth={2}
+                  dot={{ r: 5 }}
                 />
-                <Stat textAlign="center">
-                  <StatLabel fontWeight="bold">{t("brushing_count")}</StatLabel>
-                  <StatNumber>176</StatNumber>
-                  <Text fontSize="sm">
-                    {t("daily_average", { count: 1.4 })}
-                  </Text>
-                </Stat>
-              </CardBody>
-            </Card>
+              </LineChart>
+            </ResponsiveContainer>
+          </Box>
 
-            {/* 구강상태 유형 */}
-            <Card>
-              <CardBody>
-                <Image
-                  src="/images/teeth.png"
-                  mx="auto"
-                  mb={4}
-                  boxSize="120px"
-                />
-                <Stat textAlign="center">
-                  <StatLabel fontWeight="bold">{t("oral_type")}</StatLabel>
-                  <StatNumber fontSize="lg">{t("sensitive_teeth")}</StatNumber>
-                  <Text fontSize="sm" color="gray.500">
-                    {t("based_on_recent_exam")}
-                  </Text>
-                  <Text fontSize="sm" color="blue.500">
-                    {t("exam_date", { date: "23.06.22" })}
-                  </Text>
-                </Stat>
-              </CardBody>
-            </Card>
-          </SimpleGrid>
+          {/* 도넛차트 */}
+          <Box
+            bg="white"
+            shadow="sm"
+            borderRadius="lg"
+            p={5}
+            position="relative"
+          >
+            <Text fontWeight="bold" mb={4}>
+              구강검진 건강 비율
+            </Text>
+            <ResponsiveContainer width="100%" height={250}>
+              <PieChart>
+                <Pie
+                  data={pieData}
+                  dataKey="value"
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={70}
+                  outerRadius={100}
+                  paddingAngle={3}
+                >
+                  {pieData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Pie>
+              </PieChart>
+            </ResponsiveContainer>
 
-          {/* 🔹 두 번째 줄 - 2개 카드 */}
-          <SimpleGrid columns={[1, 2]} spacing={6}>
-            {/* 구강검진 건강 비율 */}
-            <Card>
-              <CardBody>
-                <Stat>
-                  <StatLabel fontWeight="bold" mb={2}>
-                    {t("oral_health_ratio")}
-                  </StatLabel>
-                  <Flex justify="center" h="200px">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <PieChart>
-                        <Pie
-                          data={oralData}
-                          dataKey="value"
-                          outerRadius={70}
-                          innerRadius={45}
-                          label
-                        >
-                          {oralData.map((entry, index) => (
-                            <Cell key={`cell-${index}`} fill={entry.color} />
-                          ))}
-                        </Pie>
-                        <Tooltip />
-                        <Legend />
-                      </PieChart>
-                    </ResponsiveContainer>
-                  </Flex>
-                  <StatNumber textAlign="center" mt={2}>
-                    60%
-                  </StatNumber>
-                  <Text fontSize="sm" textAlign="center">
-                    {t("exam_total", { count: 5 })}
-                  </Text>
-                </Stat>
-              </CardBody>
-            </Card>
+            <Flex
+              direction="column"
+              align="center"
+              justify="center"
+              position="absolute"
+              top="55%"
+              left="50%"
+              transform="translate(-50%, -50%)"
+            >
+              <Text fontSize="2xl" fontWeight="bold" color="blue.600">
+                {healthyRate}%
+              </Text>
+              <Text fontSize="sm" color="gray.600">
+                총 {totalChecks}회
+              </Text>
+            </Flex>
 
-            {/* 구강 상태 변화 추이 */}
-            <Card>
-              <CardBody>
-                <Heading size="sm" mb={4}>
-                  {t("oral_trend")}
-                </Heading>
-                <ResponsiveContainer width="100%" height={250}>
-                  <LineChart data={lineData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="회차" />
-                    <YAxis
-                      type="number"
-                      domain={[1, 4]}
-                      ticks={[1, 2, 3, 4]}
-                      tickFormatter={(value) => 상태라벨[value as number]}
-                    />
-                    <Tooltip
-                      formatter={(value) => 상태라벨[value as number] || ""}
-                    />
-                    <Line
-                      type="monotone"
-                      dataKey="상태"
-                      stroke="#3182CE"
-                      strokeWidth={2}
-                      dot
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              </CardBody>
-            </Card>
-          </SimpleGrid>
-        </>
-      )}
+            <Flex justify="space-around" mt={4}>
+              {pieData.map((item, idx) => (
+                <VStack key={idx} spacing={0}>
+                  <Text fontWeight="bold">{item.value}회</Text>
+                  <Text fontSize="sm" color={item.color}>
+                    {item.name}
+                  </Text>
+                </VStack>
+              ))}
+            </Flex>
+          </Box>
+        </Grid>
+      </Container>
     </Box>
   );
 }

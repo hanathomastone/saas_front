@@ -1,78 +1,110 @@
-import React from "react";
-import { Box, Button, Flex, Heading, Image, Text } from "@chakra-ui/react";
-import { useLocation, useNavigate } from "react-router-dom";
+import {
+  Box,
+  Flex,
+  Heading,
+  Text,
+  VStack,
+  HStack,
+  Divider,
+  Button,
+} from "@chakra-ui/react";
 
-const OralCheckResult: React.FC = () => {
-  const location = useLocation();
-  const navigate = useNavigate();
-
-  // ✅ 업로드 후 navigate에서 받은 result
-  const result = location.state?.result;
-
-  if (!result) {
-    return (
-      <Flex direction="column" align="center" justify="center" h="100vh">
-        <Heading size="md" mb={4}>
-          결과 없음
-        </Heading>
-        <Text>검진 결과 데이터가 없습니다. 다시 촬영해주세요.</Text>
-        <Button mt={6} onClick={() => navigate("/oral-check/camera")}>
-          다시 촬영하기
-        </Button>
-      </Flex>
-    );
-  }
-
+export default function OralCheckResult() {
   return (
-    <Box p={6} maxW="600px" mx="auto">
-      <Heading size="lg" mb={6}>
-        구강검진 결과
-      </Heading>
-
-      {/* 업로드된 이미지 */}
-      {result.response?.imageUrl && (
-        <Box mb={6} textAlign="center">
-          <Image
-            src={result.response.imageUrl}
-            alt="검진 이미지"
-            maxW="400px"
-            mx="auto"
-            borderRadius="md"
-            border="1px solid #ddd"
-          />
-          <Text fontSize="sm" color="gray.500" mt={2}>
-            촬영된 이미지
-          </Text>
-        </Box>
-      )}
-
-      {/* 분석 결과 텍스트 (예시) */}
-      <Box bg="gray.50" p={4} borderRadius="md" shadow="sm">
-        <Text fontSize="md" fontWeight="bold" mb={2}>
-          분석 결과
+    <Box bg="gray.50" minH="100vh" p={6}>
+      {/* 상단 헤더 */}
+      <Flex justify="space-between" align="center" mb={6}>
+        <Heading size="md">촬영 결과</Heading>
+        <Text color="blue.500" fontWeight="bold" cursor="pointer">
+          완료
         </Text>
+      </Flex>
+
+      {/* 전체 상태 */}
+      <Box bg="white" rounded="xl" shadow="sm" p={6} textAlign="center" mb={6}>
+        <Text fontSize="lg" mb={2}>
+          김철수님의 구강상태는
+        </Text>
+        <Text fontSize="2xl" fontWeight="bold" color="orange.500" mb={2}>
+          주의 입니다.
+        </Text>
+        <Text color="gray.500">2025.02.10</Text>
+      </Box>
+
+      {/* 결과 내용 */}
+      <Box bg="white" rounded="xl" shadow="sm" p={6} mb={6}>
+        <Heading size="sm" mb={4}>
+          김철수님의 검진 결과 내용
+        </Heading>
+
+        {/* 전체 구강 상태 */}
+        <Flex justify="space-between" align="center" mb={4}>
+          <HStack>
+            <Text fontWeight="bold">전체 평균</Text>
+          </HStack>
+          <HStack>
+            <Text>플라크 : 58.2%</Text>
+            <Box
+              bg="orange.100"
+              color="orange.600"
+              px={2}
+              py={1}
+              rounded="md"
+              fontSize="sm"
+              fontWeight="bold"
+            >
+              주의
+            </Box>
+          </HStack>
+        </Flex>
+        <Divider mb={4} />
+
+        {/* 부위별 상태 */}
+        <VStack align="stretch" spacing={3}>
+          {[
+            { label: "상악우측", value: 42.7, status: "양호", color: "green" },
+            { label: "상악좌측", value: 61.3, status: "주의", color: "orange" },
+            { label: "하악좌측", value: 72.9, status: "위험", color: "red" },
+            { label: "하악우측", value: 56.0, status: "주의", color: "orange" },
+          ].map((part, idx) => (
+            <Flex key={idx} justify="space-between" align="center">
+              <Text>{part.label}</Text>
+              <HStack>
+                <Text>플라크 : {part.value}%</Text>
+                <Box
+                  bg={`${part.color}.100`}
+                  color={`${part.color}.600`}
+                  px={2}
+                  py={1}
+                  rounded="md"
+                  fontSize="sm"
+                  fontWeight="bold"
+                >
+                  {part.status}
+                </Box>
+              </HStack>
+            </Flex>
+          ))}
+        </VStack>
+      </Box>
+
+      {/* 맞춤 안내 */}
+      <Box bg="white" rounded="xl" shadow="sm" p={6} mb={6}>
         <Text>
-          {result.response?.analysis
-            ? result.response.analysis
-            : "분석 결과가 없습니다."}
+          양치질을 할 때{" "}
+          <Text as="span" fontWeight="bold" color="orange.500">
+            상악좌측, 하악좌측, 하악우측
+          </Text>{" "}
+          을(를) 더 신경 써주세요
         </Text>
       </Box>
 
-      {/* 버튼들 */}
-      <Flex gap={3} mt={6}>
-        <Button flex="1" onClick={() => navigate("/oral-check/camera")}>
-          다시 촬영하기
-        </Button>
-        <Button
-          flex="1"
-          colorScheme="blue"
-          onClick={() => navigate("/dashboard")}
-        >
-          대시보드로 이동
-        </Button>
-      </Flex>
+      {/* 구강관리 팁 */}
+      <Box bg="white" rounded="xl" shadow="sm" p={6} textAlign="center">
+        <Text mb={2}>김철수님을 위한 콘텐츠가 있어요!</Text>
+        <Text mb={4}>구강 관리를 위한 정보를 알아볼까요?</Text>
+        <Button colorScheme="blue">확인하러 가기</Button>
+      </Box>
     </Box>
   );
-};
-
-export default OralCheckResult;
+}

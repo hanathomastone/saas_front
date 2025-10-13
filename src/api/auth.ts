@@ -10,5 +10,10 @@ export const loginApi = async (
   if (res.status !== 200 || !res.data.accessToken) {
     throw new Error("로그인 실패");
   }
+
+  // ✅ 토큰 저장
+  localStorage.setItem("accessToken", res.data.accessToken);
+  localStorage.setItem("refreshToken", res.data.refreshToken);
+
   return res.data;
 };

@@ -1,37 +1,30 @@
-export interface DashboardDto {
-  latestOralCheckId: number | null;
-  oralCheckTimeInterval: number | null;
+export interface OralCheckDaily {
+  oralCheckNumber: number;
+  oralCheckResultTotalType: "HEALTHY" | "GOOD" | "ATTENTION" | "DANGER";
+}
 
+export interface DashboardResponse {
+  latestOralCheckId: number;
+  oralCheckTimeInterval: number;
   oralCheckTotalCount: number;
   oralCheckHealthyCount: number;
   oralCheckGoodCount: number;
   oralCheckAttentionCount: number;
   oralCheckDangerCount: number;
-
   toothBrushingTotalCount: number;
   toothBrushingAverage: number;
-
-  oralStatus: OralStatusTypeDto | null;
+  oralStatus: string | null;
   questionnaireCreated: string | null;
-
   oralCheckResultTotalType: string;
   oralCheckUpRightScoreType: string;
   oralCheckUpLeftScoreType: string;
   oralCheckDownLeftScoreType: string;
   oralCheckDownRightScoreType: string;
-
-  oralCheckDailyList: OralCheckDailyChangeDto[];
+  oralCheckDailyList: OralCheckDaily[];
 }
 
-export interface OralStatusTypeDto {
-  plaque: number;
-  status: string;
-}
-
-export interface OralCheckDailyChangeDto {
-  date: string;
-  healthyCount: number;
-  goodCount: number;
-  attentionCount: number;
-  dangerCount: number;
+export interface DataResponse {
+  rt: number;
+  rtMsg: string;
+  response: DashboardResponse;
 }
